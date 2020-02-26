@@ -44,7 +44,7 @@ class Progress8(QDialog):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Progress Bar')
+        self.setWindowTitle('执行中...')
         self.progress = QProgressBar(self)
         self.progress.setGeometry(0, 0, 300, 25)
         self.progress.setMaximum(100)
