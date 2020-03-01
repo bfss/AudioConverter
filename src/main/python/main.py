@@ -1,11 +1,11 @@
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtWidgets import (QWidget, QPushButton, 
     QHBoxLayout, QVBoxLayout, QApplication, QFileDialog, QLabel,
-    QMessageBox, QDesktopWidget)
+    QMessageBox, QDesktopWidget, QProgressBar, QCheckBox)
 
 import sys, os
 
-from progress8 import Progress8
+from threads import ConvertThread
 
 class MainWindow(QWidget):
     
@@ -14,6 +14,7 @@ class MainWindow(QWidget):
         self.initUI()
         self.input_path = ''
         self.output_path = ''
+        
         
     def initUI(self):
         
@@ -27,6 +28,16 @@ class MainWindow(QWidget):
 
         self.input_label = QLabel('还未选择MP3文件夹')
         self.output_label = QLabel('还未选择输出文件夹')
+        self.progress_label = QLabel('当前进度：')
+
+        self.progress = QProgressBar(self)
+        self.progress.setMaximum(100)
+
+        self.is_contain_subdir_checkbox = QCheckBox('包含子文件夹')
+
+        self.progress_hbox = QHBoxLayout()
+        self.progress_hbox.addWidget(self.progress_label)
+        self.progress_hbox.addWidget(self.progress)
 
         self.input_hbox = QHBoxLayout()
         self.input_hbox.addWidget(self.input_button)
@@ -37,13 +48,15 @@ class MainWindow(QWidget):
         self.output_hbox.addWidget(self.output_label)
 
         self.vbox = QVBoxLayout()
+        self.vbox.addLayout(self.progress_hbox)
+        self.vbox.addWidget(self.is_contain_subdir_checkbox)
         self.vbox.addLayout(self.input_hbox)
         self.vbox.addLayout(self.output_hbox)
         self.vbox.addWidget(self.start_button)
         
         self.setLayout(self.vbox)  
 
-        self.resize(300, 300)
+        self.resize(500, 300)
         self.setWindowTitle('MP3转wav小工具')  
 
         rectangle = self.frameGeometry()
@@ -66,8 +79,14 @@ class MainWindow(QWidget):
             message_box = QMessageBox(self)
             message_box.setText('请选择对应的文件夹')
             message_box.show()
+  
         else:
-            Progress8(self, self.input_path, self.output_path)
+            self.converter = ConvertThread(self.input_path, self.output_path, self.is_contain_subdir_checkbox.isChecked())
+            self.converter.countChanged.connect(self.onCountChanged)
+            self.converter.start()
+
+    def onCountChanged(self, value):
+        self.progress.setValue(value)
 
 if __name__ == '__main__':
     
