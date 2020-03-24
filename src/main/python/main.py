@@ -2,12 +2,15 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtWidgets import (QWidget, QPushButton, 
     QHBoxLayout, QVBoxLayout, QApplication, QFileDialog, QLabel,
     QMessageBox, QDesktopWidget, QProgressBar, QCheckBox)
+from PyQt5.QtCore import QThread, pyqtSignal
 
 import sys, os
 
 from threads import ConvertThread
 
 class MainWindow(QWidget):
+
+    
     
     def __init__(self):
         super().__init__()
@@ -84,9 +87,23 @@ class MainWindow(QWidget):
             self.converter = ConvertThread(self.input_path, self.output_path, self.is_contain_subdir_checkbox.isChecked())
             self.converter.countChanged.connect(self.onCountChanged)
             self.converter.start()
+            self.input_button.setEnabled(False)
+            self.output_button.setEnabled(False)
+            self.start_button.setEnabled(False)
+            self.is_contain_subdir_checkbox.setEnabled(False)
 
     def onCountChanged(self, value):
         self.progress.setValue(value)
+        if value == 100:
+            message_box = QMessageBox(self)
+            message_box.setText('转换完成')
+            message_box.show()
+
+            self.input_button.setEnabled(True)
+            self.output_button.setEnabled(True)
+            self.start_button.setEnabled(True)
+            self.is_contain_subdir_checkbox.setEnabled(True)
+    
 
 if __name__ == '__main__':
     

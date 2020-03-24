@@ -11,6 +11,7 @@ from utils import mp32wav
 class ConvertThread(QThread):
     
     countChanged = pyqtSignal(int)
+    
 
     def __init__(self, input_path, output_path, is_contain_subdir):
         super().__init__()
@@ -52,4 +53,5 @@ class ConvertThread(QThread):
                     mp32wav(src, dst)
                     success_count+=1
                     self.countChanged.emit(success_count/all_count*100)
+        
 
