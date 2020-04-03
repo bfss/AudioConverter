@@ -21,7 +21,7 @@ class MainWindow(QWidget):
         
     def initUI(self):
         
-        self.input_button = QPushButton("选择mp3文件夹")
+        self.input_button = QPushButton("选择MP3文件夹")
         self.output_button = QPushButton("选择输出文件夹")
         self.start_button = QPushButton('开始')
 
@@ -60,7 +60,7 @@ class MainWindow(QWidget):
         self.setLayout(self.vbox)  
 
         self.resize(500, 300)
-        self.setWindowTitle('MP3转wav小工具')  
+        self.setWindowTitle('MP3转WAV小工具')  
 
         rectangle = self.frameGeometry()
         center_point = QDesktopWidget().availableGeometry().center()
@@ -71,11 +71,13 @@ class MainWindow(QWidget):
 
     def choose_input_directory(self):
         self.input_path = str(QFileDialog.getExistingDirectory(self, "选择MP3文件夹"))
-        self.input_label.setText(self.input_path)
+        if self.input_path:
+            self.input_label.setText(self.input_path)
 
     def choose_output_directory(self):
         self.output_path = str(QFileDialog.getExistingDirectory(self, "选择输出文件夹"))
-        self.output_label.setText(self.output_path)
+        if self.output_path:
+            self.output_label.setText(self.output_path)
 
     def start(self):
         if not self.input_path or not self.output_path:
@@ -103,6 +105,16 @@ class MainWindow(QWidget):
             self.output_button.setEnabled(True)
             self.start_button.setEnabled(True)
             self.is_contain_subdir_checkbox.setEnabled(True)
+        elif value == 0:
+            message_box = QMessageBox(self)
+            message_box.setText('没有需要转换的音频')
+            message_box.show()
+
+            self.input_button.setEnabled(True)
+            self.output_button.setEnabled(True)
+            self.start_button.setEnabled(True)
+            self.is_contain_subdir_checkbox.setEnabled(True)
+
     
 
 if __name__ == '__main__':
